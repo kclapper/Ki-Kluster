@@ -1,0 +1,74 @@
+---
+- name: Rpi Configuration
+  hosts: all
+  become: true
+
+  vars_files:
+    - vars.yml
+  
+  pre_tasks:
+    - name: Update apt
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+  handlers:
+    - name: reboot required
+      reboot:
+
+    - name: Apply netplan
+      shell: netplan apply
+
+  tasks:
+    - name: Set hostname
+      ansible.builtin.hostname:
+        name: "{{ hostname }}"
+    
+    - name: Create netplan config file
+      template: 
+        src: templates/01-netcfg.j2
+        dest: /etc/netplan/01-netcfg.yaml
+      notify: Apply netplan
+
+    - name: Check cgroups are enabled
+      lineinfile:
+        backup: true
+        path: /boot/firmware/cmdline.txt
+        regexp: '.* cgroup_memory=1 cgroup_enable=memory'
+        state: absent
+      check_mode: true
+      register: cmdline_cgroup_check
+      changed_when: false
+
+    - name: Enable cgroups if missing
+      lineinfile:
+        backrefs: true
+        path: /boot/firmware/cmdline.txt
+        regexp: ".*"
+        line: '\1 cgroup_memory=1 cgroup_enable=memory'
+      when: cmdline_cgroup_check.found == 0
+      notify: reboot required
+
+    - name: Configure POE HAT fan speeds
+      template:
+        src: templates/50-rpi-fan.rules.j2
+        dest: /etc/udev/rules.d/50-rpi-fan.rules
+      notify: reboot required
+    
+---
+- name: K3s server configuration
+  hosts: server
+  become: true
+
+  tasks:
+    # This should first just check to see if its installed
+    # It could check the systemd service
+    - name: Install K3s server
+      shell: 'curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s -'
+
+---
+- name: K3s agent configuration
+  hosts: agent
+  become: true
+
+# TODO

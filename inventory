@@ -1,0 +1,6 @@
+[server]
+192.168.1.4 hostname=server0
+
+[agent]
+192.168.1.5 hostname=agent0
+192.168.1.6 hostname=agent1

@@ -1,0 +1,11 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: no
+      addresses:
+        - {{ ansible_facts['eth0']['ipv4']['address'] }}/24
+      gateway4: 192.168.1.1
+      nameservers:
+        addresses: [192.168.1.1]

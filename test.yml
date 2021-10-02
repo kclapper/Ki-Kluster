@@ -1,0 +1,28 @@
+# ---
+# - hosts: all
+
+#   tasks:
+#     - name: Print all available facts
+#       ansible.builtin.debug:
+#         var: ansible_facts['eth0']['ipv4']['address']
+    
+#     - name: Test netplan config template
+#       template: 
+#         src: templates/01-netcfg.j2
+#         dest: ~/01-netcfg-deleteme.yml
+
+---
+- name: Rpi Configuration
+  hosts: all
+  become: true
+
+  handlers:
+    - name: reboot required
+      reboot:
+
+  tasks:
+    - name: Configure POE HAT fan speeds
+      template:
+        src: templates/50-rpi-fan.rules.j2
+        dest: /etc/udev/rules.d/50-rpi-fan.rules
+      notify: reboot required
