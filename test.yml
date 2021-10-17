@@ -11,21 +11,21 @@
 #         src: templates/01-netcfg.j2
 #         dest: ~/01-netcfg-deleteme.yml
 
-# ---
-# - name: Rpi Configuration
-#   hosts: all
-#   become: true
+---
+- name: Rpi Configuration
+  hosts: all
+  become: true
 
-#   handlers:
-#     - name: reboot required
-#       reboot:
+  handlers:
+    - name: reboot required
+      reboot:
 
-#   tasks:
-#     - name: Configure POE HAT fan speeds
-#       template:
-#         src: templates/50-rpi-fan.rules.j2
-#         dest: /etc/udev/rules.d/50-rpi-fan.rules
-#       notify: reboot required
+  tasks:
+    - name: Configure POE HAT fan speeds
+      template:
+        src: templates/50-rpi-fan.rules.j2
+        dest: /etc/udev/rules.d/50-rpi-fan.rules
+      notify: reboot required
 
 # ---
 # - name: test get k3s token
@@ -54,21 +54,21 @@
 #       debug:
 #         msg: "{{ hostvars[k3s_token_server]['k3s_token']['content'] | b64decode }}"
 
----
-- name: Test check k3s.service
-  hosts: server
-  become: true
+# ---
+# - name: Test check k3s.service
+#   hosts: server
+#   become: true
 
-  tasks:
-    - name: Populate service facts
-      ansible.builtin.service_facts:
+#   tasks:
+#     - name: Populate service facts
+#       ansible.builtin.service_facts:
 
-    # - name: Check for service
-    #   debug:
-    #     var: ansible_facts.services['testing.service']
-    #   register: k3s_service
+#     # - name: Check for service
+#     #   debug:
+#     #     var: ansible_facts.services['testing.service']
+#     #   register: k3s_service
 
-    - name: debug test
-      debug:
-        msg: "testing.service is not here"
-      when: "'testing.service' not in services"
+#     - name: debug test
+#       debug:
+#         msg: "testing.service is not here"
+#       when: "'testing.service' not in services"
