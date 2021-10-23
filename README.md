@@ -48,3 +48,8 @@ This playbook is not configured for multiple K3S servers. In the future, moving 
 It should also be noted that the server install will most likely fail if the node is already setup as an agent and vice versa.
 
 
+## Longhorn
+
+Longhorn was installed with a k8s-manifest:
+
+    kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.2.2/deploy/longhorn.yaml

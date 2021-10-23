@@ -55,6 +55,11 @@
         src: templates/50-rpi-fan.rules.j2
         dest: /etc/udev/rules.d/50-rpi-fan.rules
       notify: reboot required
+    
+    - name: Install dependencies for Longhorn support
+      apt:
+        name: open-iscsi, nfs-common
+        state: present
 
 - name: First Server Setup
   hosts: initial_server
