@@ -1,0 +1,13 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: longhorn-custom-ui
+  namespace: longhorn-system
+spec:
+  type: NodePort
+  selector:
+    app: longhorn-ui
+  ports:
+    - port: 80
+      targetPort: 8000
