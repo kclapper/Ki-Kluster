@@ -1,0 +1,48 @@
+---
+- name: First Server Setup
+  hosts: initial_server
+  become: true
+
+  vars_files:
+    - vars.yml
+    - secrets.yml
+
+  tasks:
+    - name: Get running services
+      service_facts:
+    
+    - name: Install K3s server with --cluster-init
+      shell: 'curl -sfL https://get.k3s.io | K3S_TOKEN={{ k3s_secret }} K3S_KUBECONFIG_MODE="644" K3S_CLUSTER_INIT=true sh -'
+      when: "'k3s.service' not in services"
+
+- name: K3s server configuration
+  hosts: servers
+  become: true
+
+  vars_files:
+    - vars.yml
+    - secrets.yml
+
+  tasks:
+    - name: Get running services
+      service_facts:
+    
+    - name: Install K3s server
+      shell: 'curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC=server K3S_TOKEN={{ k3s_secret }} K3S_URL=https://{{ k3s_initial_server }}:6443 K3S_KUBECONFIG_MODE="644" sh -'
+      when: "'k3s.service' not in services"
+
+- name: K3s agent configuration
+  hosts: agents
+  become: true
+
+  vars_files:
+    - vars.yml
+    - secrets.yml
+
+  tasks:
+    - name: Get running services
+      service_facts:
+
+    - name: Install K3s agent
+      shell: "curl -sfL https://get.k3s.io | K3S_URL=https://{{ k3s_initial_server }}:6443 K3S_TOKEN={{ k3s_secret }} sh -"
+      when: "'k3s-agent.service' not in services"

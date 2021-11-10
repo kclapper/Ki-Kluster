@@ -1,3 +1,3 @@
 ---
-k3s_initial_server: 192.168.1.7
-k3s_token_server: 192.168.1.4 
+# k3s_initial_server: 192.168.1.7 ## For HA cluster setup
+k3s_token_server: 192.168.1.4 ## For single server cluster setup

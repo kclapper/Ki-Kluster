@@ -1,10 +1,8 @@
-[initial_server]
-192.168.1.7 hostname=server1
-
-[servers]
-192.168.1.6 hostname=server2
-192.168.1.5 hostname=server3
+[server]
+192.168.1.4 hostname=server
 
 [agents]
-192.168.1.4 hostname=agent0
-192.168.1.8 hostname=agent1
+192.168.1.5 hostname=agent0
+192.168.1.6 hostname=agent1
+192.168.1.7 hostname=agent2
+192.168.1.8 hostname=agent3

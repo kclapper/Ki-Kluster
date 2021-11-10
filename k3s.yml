@@ -1,0 +1,39 @@
+---
+- name: K3s server configuration
+  hosts: server
+  become: true
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Get running services
+      service_facts:
+    
+    - name: Install K3s server
+      shell: 'curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s -'
+      when: "'k3s.service' not in services"
+
+    - name: Get K3s Token
+      slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: k3s_token
+
+- name: K3s agent configuration
+  hosts: agents
+  become: false
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Get running services
+      service_facts:
+
+    - name: Display k3s token
+      debug:
+        msg: "curl -sfL https://get.k3s.io | K3S_URL=https://{{ k3s_token_server }}:6443 K3S_TOKEN={{ hostvars[k3s_token_server]['k3s_token']['content'] | b64decode | trim }} sh -"
+
+    - name: Install K3s agent
+      shell: "curl -sfL https://get.k3s.io | K3S_URL=https://{{ k3s_token_server }}:6443 K3S_TOKEN={{ hostvars[k3s_token_server]['k3s_token']['content'] | b64decode | trim }} sh -" ## trim removes newline
+      when: "'k3s-agent.service' not in services"
