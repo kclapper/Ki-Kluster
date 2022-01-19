@@ -1,0 +1,116 @@
+---
+- name: Make sure pip is installed
+  apt:
+    name: python3-pip
+    state: present
+
+- name: Make sure python dependencies are installed on server
+  pip:
+    name:
+      - openshift
+      - pyyaml
+
+- name: See if Helm is installed
+  stat:
+    path: "/usr/local/bin/helm"
+  register: helm_binary
+
+- name: What is helm_binary
+  debug:
+    msg: "{{ helm_binary }}"
+
+- name: Install Helm on the server node
+  shell: 'curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash'
+  when: not helm_binary.stat.exists
+
+- name: Setup NFS server
+  include_role:
+    name: k8s_nfs_provisioner
+  when: storage_class == "nfs"
+
+- name: Add Longhorn helm repo
+  kubernetes.core.helm_repository:
+    name: longhorn
+    repo_url: "https://charts.longhorn.io"
+  when: storage_class == "longhorn"
+
+- name: Install Longhorn
+  kubernetes.core.helm:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    update_repo_cache: true
+    name: longhorn
+    chart_ref: longhorn/longhorn
+    release_namespace: longhorn-system
+    create_namespace: true
+    values:
+      nodeDownPodDeletionPolicy: delete-deployment-pod
+  when: storage_class == "longhorn"
+
+- name: Add Nginx helm repo
+  kubernetes.core.helm_repository:
+    name: ingress-nginx
+    repo_url: "https://kubernetes.github.io/ingress-nginx"
+  when: install_nginx == true
+
+- name: Install Nginx
+  kubernetes.core.helm:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    update_repo_cache: true
+    name: ingress-nginx
+    chart_ref: ingress-nginx/ingress-nginx
+    release_namespace: nginx
+    create_namespace: true
+  when: install_nginx == true
+
+- name: Download cert-manager manifest
+  ansible.builtin.get_url:
+    url: https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.yaml
+    dest: ~/cert-manager.yaml
+    mode: '0664'
+
+- name: Install cert-manager
+  kubernetes.core.k8s:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    state: present
+    src: ~/cert-manager.yaml
+
+###### WIP Adding Prometheus
+
+    # - name: Add Prometheus Helm chart repository
+    #   kubernetes.core.helm_repository:
+    #     name: prometheus-community
+    #     repo_url: "https://prometheus-community.github.io/helm-charts"
+      
+    # - name: Install Prometheus stack
+    #   kubernetes.core.helm:
+    #     kubeconfig: /etc/rancher/k3s/k3s.yaml
+    #     update_repo_cache: true
+    #     name: prometheus
+    #     chart_ref: prometheus-community/kube-prometheus-stack
+    #     release_namespace: monitoring
+    #     create_namespace: true
+    
+    # - name: Download Prometheus Operator
+    #   ansible.builtin.get_url:
+    #     url: https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml
+    #     dest: /home/ubuntu/prometheus_bundle.yaml
+    #     mode: '0664'
+
+    # - name: Change Prometheus bundle namespace
+    #   ansible.builtin.replace:
+    #     path: /home/ubuntu/prometheus_bundle.yaml
+    #     regexp: '^\s*namespace: default$'
+    #     replace: 'namespace: monitoring'
+
+    # - name: Create 'monitoring' namespace
+    #   kubernetes.core.k8s:
+    #     kubeconfig: /etc/rancher/k3s/k3s.yaml
+    #     name: monitoring
+    #     kind: Namespace
+    #     state: present
+
+    # - name: Install Prometheus Operator
+    #   kubernetes.core.k8s:
+    #     kubeconfig: /etc/rancher/k3s/k3s.yaml
+    #     state: present
+    #     src: ~/prometheus_bundle.yaml

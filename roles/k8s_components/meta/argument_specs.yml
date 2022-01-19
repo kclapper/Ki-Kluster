@@ -1,0 +1,19 @@
+---
+argument_specs:
+  main:
+    short_description: "K8S common components setup."
+    description: "Setup for k8s common components like cert-manager."
+    author: "kclapper"
+    options:
+      storage_class: 
+        description: "Which storage provisioner to use."
+        type: 'str'
+        default: longhorn
+        choices:
+          - longhorn
+          - nfs
+      install_nginx:
+        description: "Whether or not to install nginx (using helm)."
+        type: bool
+        default: false
+        

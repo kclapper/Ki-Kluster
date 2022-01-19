@@ -1,0 +1,13 @@
+---
+- name: Get running services
+  service_facts:
+
+# - name: Display k3s token
+#   debug:
+#     msg: "{{ (hostvars.values() | selectattr('ansible_facts.hostname', 'equalto', server_hostname))[0]['k3s_token']['content'] }}"
+
+- name: Install K3s agent
+  shell: "curl -sfL https://get.k3s.io | K3S_URL=https://{{ server_ip }}:6443 K3S_TOKEN={{ k3s_token }} sh -" ## trim removes newline
+  when: "'k3s-agent.service' not in services"
+
+# K3S_TOKEN={{ (hostvars.values() | selectattr('ansible_facts.hostname', 'equalto', server_hostname))[0]['k3s_token']['content'] | b64decode | trim }}

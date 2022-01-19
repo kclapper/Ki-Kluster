@@ -1,0 +1,11 @@
+---
+argument_specs:
+  main:
+    short_description: "K3S HA initial server node config."
+    description: "Sets up the first server node in a HA K3S cluster."
+    author: "kclapper"
+    options:
+      k3s_token:
+        description: "Shared secret for nodes to join the cluster."
+        type: 'str'
+        required: true

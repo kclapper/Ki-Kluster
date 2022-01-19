@@ -1,0 +1,72 @@
+---
+- name: Machine config
+  hosts: all
+  become: true
+
+  vars_files:
+    - secrets.yml
+  
+  roles:
+    - gcp_instance_config
+
+# - name: K3S HA initial server setup
+#   hosts: initial_server
+#   become: true
+
+#   vars_files:
+#     - secrets.yml
+
+#   roles:
+#     - k3s_HA_initial_server
+
+# - name: K3S HA servers setup
+#   hosts: servers
+#   become: true
+
+#   vars_files:
+#     - secrets.yml
+
+#   roles:
+#     - k3s_HA_server
+
+- name: K3S server setup
+  hosts: server
+  become: true
+  
+  vars_files:
+    - secrets.yml
+
+  vars:
+    taint: true
+
+  roles:
+    - k3s_server
+
+- name: K3S agent setup
+  hosts: agents
+  become: true
+  
+  vars_files:
+    - secrets.yml
+
+  vars:
+      k3s_token: "{{ (hostvars.values() | selectattr('ansible_facts.hostname', 'equalto', server_hostname))[0]['k3s_token']['content'] | b64decode | trim }}"
+
+  roles:
+    - role: k3s_agent
+
+- name: K8S Configuration
+  hosts: server
+  become: true
+
+  vars_files:
+    - secrets.yml
+
+  vars:
+    storage_class: "nfs"
+    nfs_server_ip: "{{ ansible_facts['hostname'] }}"
+    nfs_path: /srv/nfs
+    install_nginx: true
+
+  roles:
+    - k8s_components

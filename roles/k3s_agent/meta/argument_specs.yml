@@ -1,0 +1,18 @@
+---
+argument_specs:
+  main:
+    short_description: "K3S agent node configuration."
+    description: "Sets up a k3s agent node and connects it to single server."
+    author: "kclapper"
+    options:
+      server_hostname: 
+        description: "Hostname of the k3s server node."
+        type: 'str'
+        required: true
+      server_ip:
+        description: "Internal server node ip for agent to connect to."
+        type: 'str'
+      k3s_token:
+        description: "Token needed to join to the cluster."
+        type: 'str'
+        required: true

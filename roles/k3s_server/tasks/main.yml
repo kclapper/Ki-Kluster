@@ -1,0 +1,22 @@
+---
+- name: Get running services
+  service_facts:
+
+- name: Register taint fact
+  set_fact:
+    node_taint: "--node-taint k3s-type=server:NoExecute"
+  when: taint
+
+- name: Do not use taint
+  set_fact:
+    node_taint: ""
+  when: not taint
+
+- name: Install K3s server
+  shell: 'curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s - --disable traefik --disable local-storage {{ node_taint }}'
+  when: "'k3s.service' not in services"
+
+- name: Get K3s Token
+  slurp:
+    src: /var/lib/rancher/k3s/server/node-token
+  register: k3s_token

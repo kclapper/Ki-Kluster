@@ -23,7 +23,7 @@
     
     - name: Create netplan config file
       template: 
-        src: templates/01-netcfg.yaml.j2
+        src: 01-netcfg.yaml.j2
         dest: /etc/netplan/01-netcfg.yaml
       notify: Apply netplan
 
@@ -48,7 +48,7 @@
 
     - name: Configure POE HAT fan speeds
       template:
-        src: templates/50-rpi-fan.rules.j2
+        src: 50-rpi-fan.rules.j2
         dest: /etc/udev/rules.d/50-rpi-fan.rules
       notify: reboot required
     
@@ -56,3 +56,4 @@
       apt:
         name: open-iscsi, nfs-common
         state: present
+      when: "{{ longhorn_support }}"

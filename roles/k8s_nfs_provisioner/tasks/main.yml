@@ -1,0 +1,45 @@
+---
+- name: Create NFS directory
+  file:
+    path: "{{ nfs_path }}"
+    state: directory
+    mode: '0751'
+    group: nogroup
+    owner: nobody
+
+- name: Install nfs server
+  apt:
+    name: nfs-kernel-server
+    state: present
+
+- name: Create NFS export file
+  template: 
+    src: "exports.j2"
+    dest: /etc/exports
+  notify: Restart NFS service
+
+- name: Start NFS service
+  ansible.builtin.service:
+    name: nfs-kernel-server
+    state: started
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Add NFS provisioner helm repo
+  kubernetes.core.helm_repository:
+    name: nfs-subdir-external-provisioner
+    repo_url: "https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/"
+
+- name: Install NFS provisioner
+  kubernetes.core.helm:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    update_repo_cache: true
+    name: nfs-subdir-external-provisioner
+    chart_ref: nfs-subdir-external-provisioner/nfs-subdir-external-provisioner
+    release_namespace: nfs
+    create_namespace: true
+    values:
+      nfs:
+        server: "{{ nfs_server_ip }}"
+        path: "{{ nfs_path }}"

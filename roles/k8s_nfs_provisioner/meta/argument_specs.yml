@@ -1,0 +1,15 @@
+---
+argument_specs:
+  main:
+    short_description: "Sets up an NFS server and configures a k8s provisioner."
+    description: "Sets up an NFS server and configures a k8s provisioner."
+    author: "kclapper"
+    options:
+      nfs_server_ip: 
+        description: "ip or hostname of node hosting the nfs server."
+        type: 'str'
+        required: true
+      nfs_path:
+        description: "Path to the nfs share."
+        type: 'str'
+        default: '/srv/nfs'

@@ -1,0 +1,12 @@
+---
+argument_specs:
+  main:
+    short_description: "Rpi specific config for use in a k8s cluster."
+    description: "Rpi specific configuration for any pi to be used in the Ki-Kluster."
+    author: "kclapper"
+    options:
+      longhorn_support: 
+        description: "Whether or not to configure longhorn dependencies."
+        type: 'bool'
+        default: true
+        

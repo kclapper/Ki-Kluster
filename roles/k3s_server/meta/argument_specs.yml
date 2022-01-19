@@ -1,0 +1,11 @@
+---
+argument_specs:
+  main:
+    short_description: "K3S Server setup."
+    description: "Setup for K3S single server node."
+    author: "kclapper"
+    options:
+      taint:
+        description: "Whether or not to schedule workloads on the server node."
+        type: bool
+        default: false

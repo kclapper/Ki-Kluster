@@ -1,0 +1,12 @@
+---
+argument_specs:
+  main:
+    short_description: "GCP compute engine instance specific config for use in a k8s cluster."
+    description: "GCP compute engine instance specific config for use in a k8s cluster."
+    author: "kclapper"
+    options:
+      longhorn_support: 
+        description: "Whether or not to configure longhorn dependencies."
+        type: 'bool'
+        default: true
+        

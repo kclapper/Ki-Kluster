@@ -34,7 +34,7 @@
 
     - name: Download cert-manager manifest
       ansible.builtin.get_url:
-        url: https://github.com/jetstack/cert-manager/releases/download/v1.6.0/cert-manager.yaml
+        url: https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.yaml
         dest: ~/cert-manager.yaml
         mode: '0664'
 
@@ -59,3 +59,44 @@
         create_namespace: true
         values:
           nodeDownPodDeletionPolicy: delete-deployment-pod
+
+###### WIP Adding Prometheus
+
+    # - name: Add Prometheus Helm chart repository
+    #   kubernetes.core.helm_repository:
+    #     name: prometheus-community
+    #     repo_url: "https://prometheus-community.github.io/helm-charts"
+      
+    # - name: Install Prometheus stack
+    #   kubernetes.core.helm:
+    #     kubeconfig: /etc/rancher/k3s/k3s.yaml
+    #     update_repo_cache: true
+    #     name: prometheus
+    #     chart_ref: prometheus-community/kube-prometheus-stack
+    #     release_namespace: monitoring
+    #     create_namespace: true
+    
+    # - name: Download Prometheus Operator
+    #   ansible.builtin.get_url:
+    #     url: https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml
+    #     dest: /home/ubuntu/prometheus_bundle.yaml
+    #     mode: '0664'
+
+    # - name: Change Prometheus bundle namespace
+    #   ansible.builtin.replace:
+    #     path: /home/ubuntu/prometheus_bundle.yaml
+    #     regexp: '^\s*namespace: default$'
+    #     replace: 'namespace: monitoring'
+
+    # - name: Create 'monitoring' namespace
+    #   kubernetes.core.k8s:
+    #     kubeconfig: /etc/rancher/k3s/k3s.yaml
+    #     name: monitoring
+    #     kind: Namespace
+    #     state: present
+
+    # - name: Install Prometheus Operator
+    #   kubernetes.core.k8s:
+    #     kubeconfig: /etc/rancher/k3s/k3s.yaml
+    #     state: present
+    #     src: ~/prometheus_bundle.yaml

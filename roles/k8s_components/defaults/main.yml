@@ -1,0 +1,3 @@
+---
+storage_class: longhorn
+install_nginx: false
