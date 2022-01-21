@@ -15,10 +15,6 @@
     path: "/usr/local/bin/helm"
   register: helm_binary
 
-- name: What is helm_binary
-  debug:
-    msg: "{{ helm_binary }}"
-
 - name: Install Helm on the server node
   shell: 'curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash'
   when: not helm_binary.stat.exists
@@ -42,6 +38,7 @@
     chart_ref: longhorn/longhorn
     release_namespace: longhorn-system
     create_namespace: true
+    wait: true
     values:
       nodeDownPodDeletionPolicy: delete-deployment-pod
   when: storage_class == "longhorn"
@@ -60,6 +57,7 @@
     chart_ref: ingress-nginx/ingress-nginx
     release_namespace: nginx
     create_namespace: true
+    wait: true
   when: install_nginx == true
 
 - name: Download cert-manager manifest

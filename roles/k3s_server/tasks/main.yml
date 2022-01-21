@@ -4,7 +4,7 @@
 
 - name: Register taint fact
   set_fact:
-    node_taint: "--node-taint k3s-type=server:NoExecute"
+    node_taint: "--node-taint k3s-type=server:PreferNoSchedule"
   when: taint
 
 - name: Do not use taint

@@ -39,6 +39,7 @@
     chart_ref: nfs-subdir-external-provisioner/nfs-subdir-external-provisioner
     release_namespace: nfs
     create_namespace: true
+    wait: true
     values:
       nfs:
         server: "{{ nfs_server_ip }}"

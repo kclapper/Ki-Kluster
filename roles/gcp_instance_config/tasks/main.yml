@@ -4,6 +4,10 @@
     update_cache: true
     cache_valid_time: 3600
 
+- name: Apt upgrade
+  apt:
+    upgrade: true
+
 - name: Install dependencies for Longhorn support
   apt:
     name: open-iscsi, nfs-common
