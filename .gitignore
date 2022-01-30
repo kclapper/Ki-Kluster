@@ -3,3 +3,4 @@ gcp-secrets.yml
 rpi-secrets.yml
 gcp-inventory
 rpi-inventory
+inventory-gcp
