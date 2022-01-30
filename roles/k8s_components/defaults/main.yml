@@ -1,3 +1,4 @@
 ---
 storage_class: longhorn
 install_nginx: false
+install_cert_manager: true

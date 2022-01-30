@@ -65,12 +65,14 @@
     url: https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.yaml
     dest: ~/cert-manager.yaml
     mode: '0664'
+  when: install_cert_manager
 
 - name: Install cert-manager
   kubernetes.core.k8s:
     kubeconfig: /etc/rancher/k3s/k3s.yaml
     state: present
     src: ~/cert-manager.yaml
+  when: install_cert_manager
 
 ###### WIP Adding Prometheus
 

@@ -1,59 +1,58 @@
 ---
-- name: Rpi Configuration
-  hosts: all
-  become: true
-  
-  pre_tasks:
-    - name: Update apt
-      apt:
-        update_cache: true
-        cache_valid_time: 3600
+- name: Update apt
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
 
-  handlers:
-    - name: reboot required
-      reboot:
+- name: Apt upgrade
+  apt:
+    upgrade: true
 
-    - name: Apply netplan
-      shell: netplan apply
+- name: Set hostname
+  ansible.builtin.hostname:
+    name: "{{ hostname }}"
 
-  tasks:
-    - name: Set hostname
-      ansible.builtin.hostname:
-        name: "{{ hostname }}"
-    
-    - name: Create netplan config file
-      template: 
-        src: 01-netcfg.yaml.j2
-        dest: /etc/netplan/01-netcfg.yaml
-      notify: Apply netplan
+- name: Create netplan config file
+  template: 
+    src: 01-netcfg.yaml.j2
+    dest: /etc/netplan/01-netcfg.yaml
+  notify: Apply netplan
+  when: not dhcp_enabled
 
-    - name: Check cgroups are enabled
-      lineinfile:
-        backup: true
-        path: /boot/firmware/cmdline.txt
-        regexp: '.* cgroup_memory=1 cgroup_enable=memory'
-        state: absent
-      check_mode: true
-      register: cmdline_cgroup_check
-      changed_when: false
+- name: Create dhcp netplan config file
+  template: 
+    src: 01-netcfg-dhcp.yaml.j2
+    dest: /etc/netplan/01-netcfg.yaml
+  notify: Apply netplan
+  when: dhcp_enabled
 
-    - name: Enable cgroups if missing
-      lineinfile:
-        backrefs: true
-        path: /boot/firmware/cmdline.txt
-        regexp: "^(.*)$"
-        line: '\1 cgroup_memory=1 cgroup_enable=memory'
-      when: cmdline_cgroup_check.found == 0
-      notify: reboot required
+- name: Check cgroups are enabled
+  lineinfile:
+    backup: true
+    path: /boot/firmware/cmdline.txt
+    regexp: '.* cgroup_memory=1 cgroup_enable=memory'
+    state: absent
+  check_mode: true
+  register: cmdline_cgroup_check
+  changed_when: false
 
-    - name: Configure POE HAT fan speeds
-      template:
-        src: 50-rpi-fan.rules.j2
-        dest: /etc/udev/rules.d/50-rpi-fan.rules
-      notify: reboot required
-    
-    - name: Install dependencies for Longhorn support
-      apt:
-        name: open-iscsi, nfs-common
-        state: present
-      when: "{{ longhorn_support }}"
+- name: Enable cgroups if missing
+  lineinfile:
+    backrefs: true
+    path: /boot/firmware/cmdline.txt
+    regexp: "^(.*)$"
+    line: '\1 cgroup_memory=1 cgroup_enable=memory'
+  when: cmdline_cgroup_check.found == 0
+  notify: reboot required
+
+- name: Configure POE HAT fan speeds
+  template:
+    src: 50-rpi-fan.rules.j2
+    dest: /etc/udev/rules.d/50-rpi-fan.rules
+  notify: reboot required
+
+- name: Install dependencies for Longhorn support
+  apt:
+    name: open-iscsi, nfs-common
+    state: present
+  when: longhorn_support

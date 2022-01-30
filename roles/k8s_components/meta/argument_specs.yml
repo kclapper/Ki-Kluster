@@ -16,4 +16,8 @@ argument_specs:
         description: "Whether or not to install nginx (using helm)."
         type: bool
         default: false
+      install_cert_manager:
+        description: "Whether or not to install cert-manager."
+        type: bool
+        default: true
         

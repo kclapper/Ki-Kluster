@@ -9,4 +9,11 @@ argument_specs:
         description: "Whether or not to configure longhorn dependencies."
         type: 'bool'
         default: true
-        
+      router_ip:
+        description: "Default gateway ip. Will also be used for DNS."
+        type: 'str'
+        default: "192.168.0.1"
+      dhcp_enabled:
+        description: "Use dhcp or static ip."
+        type: 'bool'
+        default: false

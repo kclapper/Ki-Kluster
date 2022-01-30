@@ -1,0 +1,6 @@
+---
+- name: reboot required
+  reboot:
+
+- name: Apply netplan
+  shell: netplan apply
