@@ -4,7 +4,7 @@
   become: true
 
   vars_files:
-    - secrets.yml
+    - oci-secrets.yml
   
   roles:
     - gcp_instance_config
@@ -34,7 +34,7 @@
   become: true
   
   vars_files:
-    - secrets.yml
+    - oci-secrets.yml
 
   vars:
     taint: true
@@ -47,7 +47,7 @@
   become: true
   
   vars_files:
-    - secrets.yml
+    - oci-secrets.yml
 
   vars:
       k3s_token: "{{ (hostvars.values() | selectattr('ansible_facts.hostname', 'equalto', server_hostname))[0]['k3s_token']['content'] | b64decode | trim }}"
@@ -60,7 +60,7 @@
   become: true
 
   vars_files:
-    - secrets.yml
+    - oci-secrets.yml
 
   vars:
     storage_class: "nfs"
