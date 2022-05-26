@@ -3,3 +3,7 @@
   ansible.builtin.service:
     name: nfs-kernel-server
     state: restarted
+
+- name: Reload firewall
+  community.general.ufw:
+    state: reloaded

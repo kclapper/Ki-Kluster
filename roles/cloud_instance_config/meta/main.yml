@@ -1,7 +1,7 @@
 galaxy_info:
-  role_name: gcp_instance_config
+  role_name: cloud_instance_config
   author: kclapper
-  description: "GCP compute engine instance specific config for use in a k8s cluster."
+  description: "Cloud provider instance specific config for use in a k8s cluster."
 
   license: MIT
 

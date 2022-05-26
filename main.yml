@@ -7,7 +7,7 @@
     - oci-secrets.yml
   
   roles:
-    - gcp_instance_config
+    - cloud_instance_config
 
 # - name: K3S HA initial server setup
 #   hosts: initial_server
@@ -55,18 +55,18 @@
   roles:
     - role: k3s_agent
 
-- name: K8S Configuration
-  hosts: server
-  become: true
+# - name: K8S Configuration
+#   hosts: server
+#   become: true
 
-  vars_files:
-    - oci-secrets.yml
+#   vars_files:
+#     - oci-secrets.yml
 
-  vars:
-    storage_class: "nfs"
-    nfs_server_ip: "{{ ansible_facts['hostname'] }}"
-    nfs_path: /srv/nfs
-    install_nginx: true
+#   vars:
+#     storage_class: "nfs"
+#     nfs_server_ip: "{{ ansible_facts['hostname'] }}"
+#     nfs_path: /srv/nfs
+#     install_nginx: true
 
-  roles:
-    - k8s_components
+#   roles:
+#     - k8s_components

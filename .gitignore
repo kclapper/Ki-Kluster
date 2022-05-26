@@ -6,3 +6,5 @@ rpi-inventory
 inventory-gcp
 oci-secrets.yml
 oci-inventory
+
+inventory/

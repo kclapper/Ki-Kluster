@@ -1,0 +1,34 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Apt upgrade
+  apt:
+    upgrade: true
+
+- name: Install dependencies for Longhorn support
+  apt:
+    name: open-iscsi, nfs-common
+    state: present
+  when: longhorn_support
+
+- name: Ensure UFW firewall is enabled
+  community.general.ufw:
+    state: enabled
+  notify: Reboot machines
+
+- name: Allow K8s Flannel connections
+  community.general.ufw:
+    rule: allow
+    port: 8472
+    proto: udp
+  notify: Reload firewall
+
+- name: Allow K8s metrics connections
+  community.general.ufw:
+    rule: allow
+    port: 10250
+    proto: tcp
+  notify: Reload firewall

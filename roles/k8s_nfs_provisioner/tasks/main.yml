@@ -1,4 +1,11 @@
 ---
+- name: Allow NFS connections
+  community.general.ufw:
+    rule: allow
+    port: 2049
+    proto: tcp
+  notify: Reload firewall
+
 - name: Create NFS directory
   file:
     path: "{{ nfs_path }}"

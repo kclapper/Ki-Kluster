@@ -2,6 +2,27 @@
 - name: Get running services
   service_facts:
 
+- name: Allow K8s API server connections
+  community.general.ufw:
+    rule: allow
+    port: 6443
+    proto: tcp
+  notify: Reload firewall
+
+- name: Allow HTTP connections
+  community.general.ufw:
+    rule: allow
+    port: 80
+    proto: tcp
+  notify: Reload firewall
+
+- name: Allow HTTPS connections
+  community.general.ufw:
+    rule: allow
+    port: 443
+    proto: tcp
+  notify: Reload firewall
+
 - name: Register taint fact
   set_fact:
     node_taint: "--node-taint k3s-type=server:PreferNoSchedule"
