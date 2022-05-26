@@ -7,3 +7,6 @@
 - name: Reload firewall
   community.general.ufw:
     state: reloaded
+
+- name: Reboot machines
+  reboot:

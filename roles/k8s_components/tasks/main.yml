@@ -19,6 +19,23 @@
   shell: 'curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash'
   when: not helm_binary.stat.exists
 
+- name: Add Nginx helm repo
+  kubernetes.core.helm_repository:
+    name: ingress-nginx
+    repo_url: "https://kubernetes.github.io/ingress-nginx"
+  when: install_nginx == true
+
+- name: Install Nginx
+  kubernetes.core.helm:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    update_repo_cache: true
+    name: ingress-nginx
+    chart_ref: ingress-nginx/ingress-nginx
+    release_namespace: nginx
+    create_namespace: true
+    wait: true
+  when: install_nginx == true
+
 - name: Setup NFS server
   include_role:
     name: k8s_nfs_provisioner
@@ -43,26 +60,9 @@
       nodeDownPodDeletionPolicy: delete-deployment-pod
   when: storage_class == "longhorn"
 
-- name: Add Nginx helm repo
-  kubernetes.core.helm_repository:
-    name: ingress-nginx
-    repo_url: "https://kubernetes.github.io/ingress-nginx"
-  when: install_nginx == true
-
-- name: Install Nginx
-  kubernetes.core.helm:
-    kubeconfig: /etc/rancher/k3s/k3s.yaml
-    update_repo_cache: true
-    name: ingress-nginx
-    chart_ref: ingress-nginx/ingress-nginx
-    release_namespace: nginx
-    create_namespace: true
-    wait: true
-  when: install_nginx == true
-
 - name: Download cert-manager manifest
   ansible.builtin.get_url:
-    url: https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.yaml
+    url: https://github.com/cert-manager/cert-manager/releases/download/v1.8.0/cert-manager.yaml
     dest: ~/cert-manager.yaml
     mode: '0664'
   when: install_cert_manager

@@ -4,7 +4,7 @@
   become: true
 
   vars_files:
-    - oci-secrets.yml
+    - inventory/oci-secrets.yml
   
   roles:
     - cloud_instance_config
@@ -34,7 +34,7 @@
   become: true
   
   vars_files:
-    - oci-secrets.yml
+    - inventory/oci-secrets.yml
 
   vars:
     taint: true
@@ -47,7 +47,7 @@
   become: true
   
   vars_files:
-    - oci-secrets.yml
+    - inventory/oci-secrets.yml
 
   vars:
       k3s_token: "{{ (hostvars.values() | selectattr('ansible_facts.hostname', 'equalto', server_hostname))[0]['k3s_token']['content'] | b64decode | trim }}"
@@ -55,18 +55,18 @@
   roles:
     - role: k3s_agent
 
-# - name: K8S Configuration
-#   hosts: server
-#   become: true
+- name: K8S Configuration
+  hosts: server
+  become: true
 
-#   vars_files:
-#     - oci-secrets.yml
+  vars_files:
+    - inventory/oci-secrets.yml
 
-#   vars:
-#     storage_class: "nfs"
+  vars:
+    storage_class: "longhorn"
 #     nfs_server_ip: "{{ ansible_facts['hostname'] }}"
 #     nfs_path: /srv/nfs
-#     install_nginx: true
+    install_nginx: true
 
-#   roles:
-#     - k8s_components
+  roles:
+    - k8s_components

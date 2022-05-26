@@ -4,7 +4,9 @@
     rule: allow
     port: 2049
     proto: tcp
-  notify: Reload firewall
+  notify:
+  - Reload firewall
+  - Reboot machines
 
 - name: Create NFS directory
   file:

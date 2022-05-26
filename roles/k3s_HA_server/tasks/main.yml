@@ -7,21 +7,27 @@
     rule: allow
     port: 2379:2380
     proto: tcp
-  notify: Reload firewall
+  notify:
+  - Reload firewall
+  - Reboot machines
 
 - name: Allow HTTP connections
   community.general.ufw:
     rule: allow
     port: 80
     proto: tcp
-  notify: Reload firewall
+  notify:
+  - Reload firewall
+  - Reboot machines
 
 - name: Allow HTTPS connections
   community.general.ufw:
     rule: allow
     port: 443
     proto: tcp
-  notify: Reload firewall
+  notify:
+  - Reload firewall
+  - Reboot machines
 
 - name: Install K3s HA server
   shell: 'curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --disable traefik --disable local-storage" K3S_TOKEN={{ k3s_token }} K3S_URL=https://{{ server_ip }}:6443 K3S_KUBECONFIG_MODE="644" sh -s -'
